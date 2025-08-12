@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SEVOtech: Sensory Evovation Video Omega Technology</title>
+    <style>
+        #videoPlayer { position: absolute; top: 0; left: 0; }
+        #canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+        body { margin: 0; background: black; color: white; font-family: Arial; }
+        #controls { position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); padding: 10px; display: none; }
+        #status { position: fixed; bottom: 10px; right: 10px; }
+        #terms, #ageVerify { position: fixed; top: 50px; right: 10px; background: rgba(0, 0, 0, 0.7); padding: 10px; }
+        select, button, input { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <!--
+    SEVOtech (Sensory Evovation Video Omega Technology) License
+    Copyright (c) 2025 Randall Lujan. All Rights Reserved.
+    This software is proprietary and confidential. Unauthorized use, copying, modification, distribution, or reverse-engineering is prohibited.
+    Access requires payment of $1 USD for the first 5 minutes and $1 USD per minute thereafter via CashApp ($11him11).
+    Use constitutes agreement to terms and spiritual entanglement with Randall Lujan, the Organic Source Code.
+    Contact $11him11 via CashApp for inquiries.
+    -->
+    <video id="videoPlayer" width="800" height="450" controls>
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <canvas id="canvas" width="800" height="450"></canvas>
+    <audio id="heartbeat" loop>
+        <source src="media/heartbeat.mp3" type="audio/mp3">
+    </audio>
+    <audio id="climaxSound">
+        <source src="media/climax-effect.mp3" type="audio/mp3">
+    </audio>
+    <audio id="tantricSound" loop>
+        <source src="media/tantric-breath.mp3" type="audio/mp3">
+    </audio>
+    <div id="ageVerify">
+        <p>You must be 18+ to use SEVOtech. Confirm your age:</p>
+        <button onclick="confirmAge()">I am 18+</button>
+    </div>
+    <div id="terms" style="display: none;">
+        <p><strong>SEVOtech Terms of Use</strong></p>
+        <p>SEVOtech is proprietary to Randall Lujan. Pay $1 for the first 5 minutes and $1 per minute thereafter via CashApp ($11him11). Unauthorized use is prohibited. Use entangles your spirit, mind, and body with the Organic Source Code.</p>
+        <button onclick="acceptTerms()">Accept Terms</button>
+    </div>
+    <div id="controls">
+        <input type="file" id="videoUpload" accept="video/mp4">
+        <button id="payButton" style="display: none;">Pay Now via CashApp</button>
+        <input type="text" id="verificationCode" placeholder="Enter Payment Verification Code" style="display: none;">
+        <button id="verifyButton" style="display: none;">Verify Payment</button>
+        <select id="feelingSelect">
+            <option value="tantric">Tantric (Orgasmic Energy)</option>
+            <option value="incubus">Incubus (Seductive Power)</option>
+            <option value="protect">Protect (Love Shield)</option>
+        </select>
+        <input type="number" id="intensityInput" min="0" max="100" value="50" style="width: 60px;">
+        <input type="text" id="commandInput" placeholder="Enter tantric command (e.g., Transmute orgasm!)">
+        <button onclick="addFeelingCommand()">Evoke SEVOtech</button>
+        <button onclick="addMaleOrgasmBuild()">Male Orgasmic Build</button>
+        <button onclick="addFemaleOrgasmBuild()">Female Orgasmic Build</button>
+        <button onclick="toggleSyncWithIncubus()">Sync with Azrael (Amplify)</button>
+    </div>
+    <div id="status">Awaiting SEVOtech’s Organic Evocation...</div>
+    <script>
+        // Obfuscate this script before deployment: https://obfuscator.io/
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const video = document.getElementById('videoPlayer');
+        const videoSource = document.getElementById('videoSource');
+        const heartbeat = document.getElementById('heartbeat');
+        const climaxSound = document.getElementById('climaxSound');
+        const tantricSound = document.getElementById('tantricSound');
+        const status = document.getElementById('status');
+        const videoUpload = document.getElementById('videoUpload');
+        const feelingSelect = document.getElementById('feelingSelect');
+        const intensityInput = document.getElementById('intensityInput');
+        const commandInput = document.getElementById('commandInput');
+        const payButton = document.getElementById('payButton');
+        const verificationCode = document.getElementById('verificationCode');
+        const verifyButton = document.getElementById('verifyButton');
+        const terms = document.getElementById('terms');
+        const ageVerify = document.getElementById('ageVerify');
+        const controls = document.getElementById('controls');
+
+        let arousalLevel = 0;
+        let tantricLevel = 0;
+        let protectLevel = 0;
+        const maxLevel = 100;
+        let isRefractory = false;
+        let refractoryTime = 0;
+        let currentFeeling = 'neutral';
+        let sceneCues = [];
+        let syncWithIncubus = false;
+        let amplifyFactor = 1.0;
+        let effectsUnlocked = false;
+
+        // Domain lock
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== 'sevotech.yourdomain.com') {
+            document.body.innerHTML = 'Unauthorized domain. SEVOtech access denied.';
+            throw new Error('Domain restricted');
+        }
+
+        // Age and terms
+        window.confirmAge = () => {
+            ageVerify.style.display = 'none';
+            terms.style.display = 'block';
+            status.textContent = 'Age verified. Accept SEVOtech terms to proceed.';
+        };
+        window.acceptTerms = () => {
+            terms.style.display = 'none';
+            controls.style.display = 'block';
+            status.textContent = 'Terms accepted. Upload video to begin SEVOtech.';
+        };
+
+        // WebSocket
+        let socket;
+        function initWebSocket() {
+            socket = new WebSocket('ws://localhost:8080');
+            socket.onopen = () => console.log('Connected to SEVOtech’s tantric network');
+            socket.onmessage = (event) => console.log('Masses receive:', event.data);
+        }
+
+        // Video upload and payment
+        videoUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type === 'video/mp4') {
+                const url = URL.createObjectURL(file);
+                videoSource.src = url;
+                video.load();
+                status.textContent = 'Video loaded, calculating SEVOtech cost...';
+                video.onloadedmetadata = () => {
+                    const durationMin = Math.ceil(video.duration / 60);
+                    let cost = 1;
+                    if (durationMin > 5) {
+                        cost += (durationMin - 5);
+                    }
+                    status.textContent = `Video duration: ${durationMin} min. Cost: $${cost}. Pay to unlock SEVOtech entanglement.`;
+                    payButton.style.display = 'block';
+                    payButton.onclick = () => {
+                        window.open(`https://cash.app/$11him11/${cost}`, '_blank');
+                        status.textContent = `Payment initiated. Enter SEVOtech verification code.`;
+                        verificationCode.style.display = 'block';
+                        verifyButton.style.display = 'block';
+                    };
+                };
+            } else {
+                status.textContent = 'Please upload a valid MP4 video for SEVOtech.';
+            }
+        });
+
+        // Verify payment (mock)
+        verifyButton.onclick = async () => {
+            const code = verificationCode.value.trim();
+            if (code) { // Replace with server-side check
+                effectsUnlocked = true;
+                initWebSocket();
+                payButton.style.display = 'none';
+                verificationCode.style.display = 'none';
+                verifyButton.style.display = 'none';
+                feelingSelect.style.display = 'block';
+                intensityInput.style.display = 'block';
+                commandInput.style.display = 'block';
+                document.querySelector('button[onclick="addFeelingCommand()"]').style.display = 'block';
+                document.querySelector('button[onclick="addMaleOrgasmBuild()"]').style.display = 'block';
+                document.querySelector('button[onclick="addFemaleOrgasmBuild()"]').style.display = 'block';
+                document.querySelector('button[onclick="toggleSyncWithIncubus()"]').style.display = 'block';
+                status.textContent = 'Payment verified. SEVOtech entanglement unlocked!';
+                const duration = video.duration;
+                sceneCues = [
+                    { time: duration * 0.1, change: 20, feeling: 'protect', command: 'Build love shield' },
+                    { time: duration * 0.3, change: 30, feeling: 'tantric', command: 'Invoke orgasmic buildup' },
+                    { time: duration * 0.6, change: 40, feeling: 'incubus', command: 'Seduce and distract demons' },
+                    { time: duration * 0.9, change: 50, feeling: 'tantric', command: 'Transmute to climax' },
+                    { time: duration * 0.95, change: -100, feeling: 'protect', command: 'Protect with love energy' }
+                ];
+                console.log('SEVOtech cues set for video duration:', duration);
+            } else {
+                status.textContent = 'Invalid code. SEVOtech entanglement blocked.';
+            }
+        };
+
+        // Add tantric command
+        window.addFeelingCommand = () => {
+            if (!effectsUnlocked) return;
+            const feeling = feelingSelect.value;
+            const intensity = parseInt(intensityInput.value) * amplifyFactor;
+            const command = commandInput.value || `Evoke ${feeling}`;
+            const time = video.currentTime || video.duration * Math.random() || 0;
+            sceneCues.push({ time, change: intensity, feeling, command });
+            sceneCues.sort((a, b) => a.time - b.time);
+            status.textContent = `SEVOtech Command: ${command} at ${Math.round(time)}s, intensity ${Math.round(intensity)}`;
+            console.log('SEVOtech command:', { time, change: intensity, feeling, command });
+        };
+
+        // Male Orgasmic Build
+        window.addMaleOrgasmBuild = () => {
+            if (!effectsUnlocked) return;
+            const intensity = 80 * amplifyFactor;
+            const time = video.currentTime || video.duration * Math.random() || 0;
+            sceneCues.push({ time, change: intensity, feeling: 'tantric', command: 'Male Orgasmic Throb' });
+            sceneCues.sort((a, b) => a.time - b.time);
+            status.textContent = `SEVOtech Male Orgasmic Build invoked at ${Math.round(time)}s`;
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+        };
+
+        // Female Orgasmic Build
+        window.addFemaleOrgasmBuild = () => {
+            if (!effectsUnlocked) return;
+            const intensity = 80 * amplifyFactor;
+            const time = video.currentTime || video.duration * Math.random() || 0;
+            sceneCues.push({ time, change: intensity, feeling: 'tantric', command: 'Female Orgasmic Throb' });
+            sceneCues.sort((a, b) => a.time - b.time);
+            status.textContent = `SEVOtech Female Orgasmic Build invoked at ${Math.round(time)}s`;
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100, 50]);
+        };
+
+        // Sync with Azrael
+        window.toggleSyncWithIncubus = () => {
+            if (!effectsUnlocked) return;
+            syncWithIncubus = !syncWithIncubus;
+            amplifyFactor = syncWithIncubus ? 1.5 : 1.0;
+            status.textContent = syncWithIncubus ? 'Synced with Azrael’s SEVOtech - Effects Amplified!' : 'Sync Disabled';
+        };
+
+        // Draw effects
+        function drawEffect() {
+            if (!effectsUnlocked) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const intensity = (arousalLevel + tantricLevel + protectLevel) / (3 * maxLevel) * amplifyFactor;
+            let glowColor;
+            if (currentFeeling === 'tantric') {
+                glowColor = `rgba(255, 0, 100, ${0.7 * intensity})`;
+            } else if (currentFeeling === 'incubus') {
+                glowColor = `rgba(200, 0, 200, ${0.7 * intensity})`;
+            } else if (currentFeeling === 'protect') {
+                glowColor = `rgba(255, 215, 0, ${0.7 * intensity})`;
+            } else {
+                glowColor = `rgba(255, 255, 255, ${0.3 * intensity})`;
+            }
+            ctx.fillStyle = glowColor;
+            ctx.beginPath();
+            const pulse = 70 + 40 * intensity + Math.sin(Date.now() / 200) * 10;
+            const randomOffset = Math.random() * 20 - 10;
+            ctx.arc(400 + randomOffset, 225 + randomOffset, pulse, 0, 2 * Math.PI);
+            ctx.fill();
+            if (tantricLevel > 80 || arousalLevel > 80 || protectLevel > 80) {
+                for (let i = 0; i < 15 + Math.floor(Math.random() * 7); i++) {
+                    ctx.fillStyle = currentFeeling === 'tantric' ? 'rgba(255, 0, 100, 0.8)' : 'rgba(255, 255, 255, 0.8)';
+                    const x = 400 + Math.random() * 200 - 100;
+                    const y = 225 + Math.random() * 200 - 100;
+                    ctx.fillRect(x, y, 7, 7);
+                }
+            }
+            if (arousalLevel >= maxLevel || tantricLevel >= maxLevel || protectLevel >= maxLevel) {
+                ctx.fillStyle = currentFeeling === 'tantric' ? 'rgba(255, 0, 100, 0.6)' : 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            if (isRefractory) {
+                ctx.fillStyle = 'rgba(50, 50, 50, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // Update feelings
+        function updateFeelings() {
+            if (!effectsUnlocked) return;
+            const currentTime = video.currentTime;
+            sceneCues.forEach(cue => {
+                if (Math.abs(currentTime - cue.time) < 0.5 && !isRefractory) {
+                    let change = cue.change * amplifyFactor;
+                    if (cue.feeling === 'tantric') {
+                        tantricLevel = Math.min(maxLevel, Math.max(0, tantricLevel + change));
+                        currentFeeling = 'tantric';
+                    } else if (cue.feeling === 'incubus') {
+                        arousalLevel = Math.min(maxLevel, Math.max(0, arousalLevel + change));
+                        currentFeeling = 'incubus';
+                    } else if (cue.feeling === 'protect') {
+                        protectLevel = Math.min(maxLevel, Math.max(0, protectLevel + change));
+                        currentFeeling = 'protect';
+                    }
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({
+                            feeling: currentFeeling,
+                            level: Math.max(arousalLevel, tantricLevel, protectLevel),
+                            time: currentTime,
+                            command: cue.command
+                        }));
+                    }
+                    status.textContent = `SEVOtech Evocation: ${cue.command} (${currentFeeling}, level ${Math.round(Math.max(arousalLevel, tantricLevel, protectLevel))})`;
+                    if (arousalLevel >= maxLevel || tantricLevel >= maxLevel || protectLevel >= maxLevel) {
+                        triggerPeak();
+                    }
+                }
+            });
+            if (tantricLevel > 0 && currentFeeling === 'tantric' && !isRefractory) {
+                tantricSound.volume = Math.min(0.8, tantricLevel / 100);
+                tantricSound.playbackRate = 0.8 + (tantricLevel / 100) * 0.6;
+                tantricSound.play().catch(() => {});
+                heartbeat.pause();
+                if (navigator.vibrate) navigator.vibrate([300, 200, 300, 200]);
+            } else if (arousalLevel > 0 && currentFeeling === 'incubus' && !isRefractory) {
+                heartbeat.volume = Math.min(0.8, arousalLevel / 100);
+                heartbeat.playbackRate = 1 + (arousalLevel / 100) * 1.0;
+                heartbeat.play().catch(() => {});
+                tantricSound.pause();
+                if (navigator.vibrate) navigator.vibrate([600, 100, 600]);
+            } else if (protectLevel > 0 && currentFeeling === 'protect' && !isRefractory) {
+                tantricSound.volume = Math.min(0.8, protectLevel / 100);
+                tantricSound.playbackRate = 0.7 + (protectLevel / 100) * 0.3;
+                tantricSound.play().catch(() => {});
+                heartbeat.pause();
+                if (navigator.vibrate) navigator.vibrate([150, 300, 150]);
+            } else {
+                heartbeat.pause();
+                tantricSound.pause();
+            }
+            if (isRefractory) {
+                refractoryTime -= 0.1;
+                if (refractoryTime <= 0) {
+                    isRefractory = false;
+                    arousalLevel = 0;
+                    tantricLevel = 0;
+                    protectLevel = 0;
+                    currentFeeling = 'neutral';
+                    status.textContent = 'SEVOtech Energy Reset';
+                    console.log("SEVOtech power transmuted, ready to own more!");
+                }
+            }
+            drawEffect();
+        }
+
+        // Peak transmutation
+        function triggerPeak() {
+            if (currentFeeling === 'tantric') {
+                climaxSound.play().catch(() => {});
+                console.log("SEVOtech: Orgasmic tantra transmuted—demons distracted!");
+            } else if (currentFeeling === 'incubus') {
+                console.log("SEVOtech: Seductive power unleashed—masses owned!");
+            } else if (currentFeeling === 'protect') {
+                console.log("SEVOtech: Love shield activated—demonic influence destroyed!");
+            }
+            isRefractory = true;
+            refractoryTime = 15;
+            if (navigator.vibrate) navigator.vibrate(1000);
+            setTimeout(drawEffect, 300);
+        }
+      
+
+        // Sync to video
+        video.addEventListener('timeupdate', updateFeelings);
+
+        // Animation loop
+        function animate() {
+            drawEffect();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
